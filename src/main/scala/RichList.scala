@@ -29,26 +29,5 @@ object RichList {
 
       convert(key, list, new HashMap[K, V])
     }
-
-    /**
-     * Calls the given method recursive with each element of the [[List]].
-     * Using the result of the function as input for the next function.
-     * @param obj Object that contains the function to be called.
-     * @param func function which will be called for each element of the list.
-     * @tparam T Type of the object.
-     * @return The result of the last called function.
-     */
-    def callRecursive[T](obj: T, func: (T, V) => T) = {
-      @tailrec
-      def call(list: List[V], obj: T, func: (T, V) => T): T = {
-        list match {
-          case Nil => obj
-          case head :: tail => call(tail, func(obj, head), func)
-        }
-      }
-
-      call(list, obj, func)
-    }
   }
-
 }
