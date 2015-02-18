@@ -5,14 +5,19 @@ import scala.io.Source
 /**
  * Created by Rudie on 16-2-2015.
  */
-object main extends App {
+object Main extends App {
 
-  //load file
-  val lines = Source.fromFile("D:\\Documents\\OneDrive\\Data Science 1\\UserItem.data").getLines().toList
+  val uri = getClass getResource "userItem.data" toURI
+  val lines = Source.fromFile(uri).getLines().toList
+
   //map data to something use full
-  val data = lines.map(x => x.split(",").toList).map(x => new Tuple3(x(0), x(1) toInt, x(2) toDouble)).groupBy(x => x._1)
-  //map data to HashMap with UserPreferences
-  val result = data.map(x => x._2.callRecursive[UserPreference](new UserPreference(x._1), (y, z) => y.addRating(z._2, z._3))).toList.toHashMap(x => x.id)
+  val data = lines.map(_.split(",") match {
+    case Array(userId: String, productId: String, productRating: String) => (userId, productId, productRating.toDouble)
+  }).toList.groupBy(_._1)
 
-  println(result)
+  //map data to HashMap with UserPreferences
+  val result = data.map(t => t._2.callRecursive[UserPreference](UserPreference(t._1), (y, z) => y.addRating(z._2, z._3)))
+    .toList.toHashMap(x => x.id)
+
+  result.foreach(println)
 }
