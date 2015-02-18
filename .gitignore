@@ -20,6 +20,5 @@ project/plugins/project/
 
 # my stuff
 project/
-build.sbt
 .idea/
 src/main/scala/test.sc
