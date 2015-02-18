@@ -5,17 +5,14 @@ import scala.collection.immutable.HashMap
  *
  * Created by Rudie on 17-2-2015.
  */
-class UserPreference(_id: String, _ratings: HashMap[Int, Double] = new HashMap) {
-  require(_id != null)
-
-  val id = _id
-  val ratings = _ratings
+case class UserPreference(id: String, ratings: HashMap[String, Double] = new HashMap) {
+  require(id != null)
 
   /** Returns a [[UserPreference]] with the added rating */
-  def addRating(product: Int, rating: Double) = new UserPreference(id, ratings + (product -> rating))
+  def addRating(product: String, rating: Double) = new UserPreference(id, ratings + (product -> rating))
 
   /** Returns a rating to the [[UserPreference]] */
-  def getRating(product: Int) = ratings get product
+  def getRating(product: String) = ratings get product
 
   override def toString = "UserPreference " + id + ": " + ratings
 }
