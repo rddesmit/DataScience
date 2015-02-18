@@ -23,7 +23,7 @@ object RichList {
       def convert(k: V => K, list: List[V], hashMap: HashMap[K, V]): HashMap[K, V] = {
         list match {
           case Nil => hashMap
-          case x :: tail => convert(key, tail, hashMap + (key(x) -> x))
+          case head :: tail => convert(key, tail, hashMap + (key(head) -> head))
         }
       }
 
@@ -43,7 +43,7 @@ object RichList {
       def call(list: List[V], obj: T, func: (T, V) => T): T = {
         list match {
           case Nil => obj
-          case x :: tail => call(tail, func(obj, x), func)
+          case head :: tail => call(tail, func(obj, head), func)
         }
       }
 
