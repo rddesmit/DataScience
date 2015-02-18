@@ -20,5 +20,4 @@ project/plugins/project/
 
 # my stuff
 project/
-.idea/
 src/main/scala/test.sc
