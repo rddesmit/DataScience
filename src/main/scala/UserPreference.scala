@@ -13,6 +13,4 @@ case class UserPreference(id: String, ratings: HashMap[String, Double] = new Has
 
   /** Returns a rating to the [[UserPreference]] */
   def getRating(product: String) = ratings get product
-
-  override def toString = "UserPreference " + id + ": " + ratings
 }

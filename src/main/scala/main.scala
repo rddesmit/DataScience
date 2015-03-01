@@ -1,6 +1,8 @@
+import RichHashMap._
 import RichList._
 import UserSimilarity._
 
+import scala.collection.immutable.HashMap
 import scala.io.Source
 
 /**
@@ -20,8 +22,9 @@ object Main extends App {
   }).toList.groupBy(_._1)
 
   //map data to HashMap with UserPreferences
-  data.map(x => (UserPreference(x._1) /: x._2)((r, c) => r addRating(c._2, c._3)))
-    .toList.toHashMap(_.id).foreach(println)
+  val preferences = data.map(x => (UserPreference(x._1) /: x._2)((r, c) => r addRating(c._2, c._3)))
+    .toList.toHashMap(x => x.id)
+  println(preferences)
 
 
   /*Exercise two*/
@@ -34,4 +37,21 @@ object Main extends App {
   val data3 = List((4.75, 4.0), (4.5, 3.0), (5.0, 5.0), (4.25, 2.0), (4.0, 1.0))
   println("Pearson coefficient: \t" + pearsonCoefficient(data3))
   println("Cosine similarity: \t" + cosineSimilarity(data3))
+
+  def nearestNeighbours(userPreferences: HashMap[String, UserPreference], target: UserPreference, strategy: List[(Double, Double)] => Double, threshold: Double, max: Int) = {
+    userPreferences
+      .toList
+      .filter(x => x._1 != target.id)
+      .map(x => x._2 -> strategy(x._2.ratings.zipper(target.ratings).values toList))
+      .filter(x => x._2 >= threshold && x._1.ratings.keyDiff(target.ratings).length > 0)
+      .sortBy(x => x._2)
+      .take(max)
+  }
+
+  println("\nReal data")
+  println("Comparing user: \t" + preferences("7"))
+  println("Euclidean distance: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.euclideanDistance, 0.35, 3))
+  println("Manhattan distance: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.manhattanDistance, 0.35, 3))
+  println("Pearson coefficient: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.pearsonCoefficient, 0.35, 3))
+  println("Cosine similarity: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.cosineSimilarity, 0.35, 3))
 }
