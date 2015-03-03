@@ -30,25 +30,16 @@ object Main extends App {
   /*Exercise two*/
   println("\nExercise two")
 
-  val data2 = List((2.0, 0.0), (4.0, 3.0), (1.0, 2.0))
-  println("Euclidean distance: \t" + euclideanDistance(data2))
-  println("Manhattan distance: \t" + manhattanDistance(data2))
-
-  val data3 = List((4.75, 4.0), (4.5, 3.0), (5.0, 5.0), (4.25, 2.0), (4.0, 1.0))
-  println("Pearson coefficient: \t" + pearsonCoefficient(data3))
-  println("Cosine similarity: \t" + cosineSimilarity(data3))
-
   def nearestNeighbours(userPreferences: HashMap[String, UserPreference], target: UserPreference, strategy: List[(Double, Double)] => Double, threshold: Double, max: Int) = {
     userPreferences
       .toList
       .filter(x => x._1 != target.id)
       .map(x => x._2 -> strategy(x._2.ratings.zipper(target.ratings).values toList))
       .filter(x => x._2 >= threshold && x._1.ratings.keyDiff(target.ratings).length > 0)
-      .sortBy(x => x._2)
+      .sortWith(_._2 > _._2)
       .take(max)
   }
 
-  println("\nReal data")
   println("Comparing user: \t" + preferences("7"))
   println("Euclidean distance: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.euclideanDistance, 0.35, 3))
   println("Manhattan distance: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.manhattanDistance, 0.35, 3))
