@@ -1,48 +1,48 @@
-import RichHashMap._
-import RichList._
-import UserSimilarity._
+import java.nio.charset.CodingErrorAction
 
-import scala.collection.immutable.HashMap
-import scala.io.Source
+import MovieLens.{Movie, Rating}
+import RichDataStructures.RichList._
+import NearestNeighbour._
+
+import scala.io.{Codec, Source}
 
 /**
  * Created by Rudie on 16-2-2015.
  */
 object Main extends App {
 
-  val uri = getClass getResource "userItem.data" toURI
-  val lines = Source.fromFile(uri).getLines().toList
+  val user = "43"
+  val threshold = 0.35
+  val amount = 10
+  val dataUri = getClass getResource "MovieLens/u.data" toURI
+  val itemUri = getClass getResource "MovieLens/u.item" toURI
 
-  /*Exercise one*/
-  println("\nExercise one")
+  implicit val codec = Codec("UTF-8")
+  codec.onMalformedInput(CodingErrorAction.IGNORE)
 
-  //map data to something use full
-  val data = lines.map(_.split(",") match {
-    case Array(userId: String, productId: String, productRating: String) => (userId, productId, productRating.toDouble)
-  }).toList.groupBy(_._1)
+  //import data
+  val data = Source fromFile dataUri getLines() toList
+  val ratings = data.map(_.split("\t") match {
+    case Array(id: String, product: String, rating: String, timestamp: String) => Rating(id, product, rating toDouble, timestamp)
+  }).toList.groupBy(_.id)
+
+  val items = Source fromFile itemUri getLines() toList
+  val movies = items.map(_.split("\\|") match {
+    case Array(id: String, title: String, releaseDate: String, videoReleaseData: String, imdbUrl: String, _*) => Movie(id, title, releaseDate, videoReleaseData, imdbUrl)
+  }) toList
 
   //map data to HashMap with UserPreferences
-  val preferences = data.map(x => (UserPreference(x._1) /: x._2)((r, c) => r addRating(c._2, c._3)))
+  val preferences = ratings.map(x => (UserPreference(x._1) /: x._2)((r, c) => r addRating(c.product, c.rating)))
     .toList.toHashMap(x => x.id)
-  println(preferences)
 
+  val euclideanDistance = nearestNeighbours(preferences.toList.map(x => x._2), preferences(user), UserSimilarity.euclideanDistance, threshold, amount)
+  val manhattanDistance = nearestNeighbours(preferences.toList.map(x => x._2), preferences(user), UserSimilarity.manhattanDistance, threshold, amount)
+  val pearsonCoefficient = nearestNeighbours(preferences.toList.map(x => x._2), preferences(user), UserSimilarity.pearsonCoefficient, threshold, amount)
+  val cosineSimilarity = nearestNeighbours(preferences.toList.map(x => x._2), preferences(user), UserSimilarity.cosineSimilarity, threshold, amount)
 
-  /*Exercise two*/
-  println("\nExercise two")
-
-  def nearestNeighbours(userPreferences: HashMap[String, UserPreference], target: UserPreference, strategy: List[(Double, Double)] => Double, threshold: Double, max: Int) = {
-    userPreferences
-      .toList
-      .filter(x => x._1 != target.id)
-      .map(x => x._2 -> strategy(x._2.ratings.zipper(target.ratings).values toList))
-      .filter(x => x._2 >= threshold && x._1.ratings.keyDiff(target.ratings).length > 0)
-      .sortWith(_._2 > _._2)
-      .take(max)
-  }
-
-  println("Comparing user: \t" + preferences("7"))
-  println("Euclidean distance: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.euclideanDistance, 0.35, 3))
-  println("Manhattan distance: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.manhattanDistance, 0.35, 3))
-  println("Pearson coefficient: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.pearsonCoefficient, 0.35, 3))
-  println("Cosine similarity: \t" + nearestNeighbours(preferences, preferences("7"), UserSimilarity.cosineSimilarity, 0.35, 3))
+  println("Comparing user: \t" + preferences(user))
+  println("Euclidean distance: \t" + euclideanDistance.map(x => (x.id, x.distance)))
+  println("Manhattan distance: \t" + manhattanDistance.map(x => (x.id, x.distance)))
+  println("Pearson coefficient: \t" + pearsonCoefficient.map(x => (x.id, x.distance)))
+  println("Cosine similarity: \t" + cosineSimilarity.map(x => (x.id, x.distance)))
 }

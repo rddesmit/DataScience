@@ -5,7 +5,7 @@ import scala.collection.immutable.HashMap
  *
  * Created by Rudie on 17-2-2015.
  */
-case class UserPreference(id: String, ratings: HashMap[String, Double] = new HashMap) {
+case class UserPreference(id: String, ratings: HashMap[String, Double] = new HashMap, distance: Double = -1) {
   require(id != null)
 
   /** Returns a [[UserPreference]] with the added rating */

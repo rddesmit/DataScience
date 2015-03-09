@@ -1,3 +1,5 @@
+package RichDataStructures
+
 import scala.collection.immutable.HashMap
 
 /**
@@ -12,8 +14,9 @@ object RichHashMap {
       (HashMap[K, (V, V)]() /: hashMap.keys.toList.intersect(map.keys.toList).map(x => x ->(hashMap(x), map(x))))((r, c) => r + c)
     }
 
-    def keyDiff(map: HashMap[K, V]) = {
-      hashMap.keys.toList.diff(map.keys.toList)
+    def diff(map: HashMap[K, V]):HashMap[K, V] = {
+      val diffKeys = hashMap.keys.toList.diff(map.keys.toList)
+      map.filter(x => !diffKeys.contains(x._1))
     }
   }
 
