@@ -29,11 +29,11 @@ object Main extends App {
   val items = Source fromFile itemUri getLines() toList
   val movies = items.map(_.split("\\|") match {
     case Array(id: String, title: String, releaseDate: String, videoReleaseData: String, imdbUrl: String, _*) => Movie(id, title, releaseDate, videoReleaseData, imdbUrl)
-  }) toList
+  }).toList.toHashMap(_.id)
 
   //map data to HashMap with UserPreferences
   val preferences = ratings.map(x => (UserPreference(x._1) /: x._2)((r, c) => r addRating(c.product, c.rating)))
-    .toList.toHashMap(x => x.id)
+    .toList.toHashMap(_.id)
 
   val euclideanDistance = nearestNeighbours(preferences.toList.map(x => x._2), preferences(user), UserSimilarity.euclideanDistance, threshold, amount)
   val manhattanDistance = nearestNeighbours(preferences.toList.map(x => x._2), preferences(user), UserSimilarity.manhattanDistance, threshold, amount)
@@ -45,4 +45,15 @@ object Main extends App {
   println("Manhattan distance: \t" + manhattanDistance.map(x => (x.id, x.distance)))
   println("Pearson coefficient: \t" + pearsonCoefficient.map(x => (x.id, x.distance)))
   println("Cosine similarity: \t" + cosineSimilarity.map(x => (x.id, x.distance)))
+
+  var euclideanDistancePredictions = predictRatings(euclideanDistance, preferences(user), amount)
+  val manhattanDistancePredictions = predictRatings(manhattanDistance, preferences(user), amount)
+  val pearsonCoefficientPredictions = predictRatings(pearsonCoefficient, preferences(user), amount)
+  val cosineSimilarityPredictions = predictRatings(cosineSimilarity, preferences(user), amount)
+
+  println("Predictions for user: \t" + preferences(user))
+  euclideanDistancePredictions.foreach(p => println("Euclidean distance: \t" + movies(p.id)))
+  manhattanDistancePredictions.foreach(p => println("Manhattan distance: \t" + movies(p.id)))
+  pearsonCoefficientPredictions.foreach(p => println("Pearson coefficient: \t" + movies(p.id)))
+  cosineSimilarityPredictions.foreach(p => println("Cosine similarity: \t" + movies(p.id)))
 }

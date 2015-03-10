@@ -41,7 +41,7 @@ object UserSimilarity {
     result.mult / (Math.sqrt(result.powX) * Math.sqrt(result.powY))
   }
 
-  case class PearsonCoefficient(mult: Double, sumX: Double, sumY: Double, powX: Double, powY: Double, length: Int)
+  private case class PearsonCoefficient(mult: Double, sumX: Double, sumY: Double, powX: Double, powY: Double, length: Int)
 
-  case class CosineSimilarity(mult: Double, powX: Double, powY: Double)
+  private case class CosineSimilarity(mult: Double, powX: Double, powY: Double)
 }
