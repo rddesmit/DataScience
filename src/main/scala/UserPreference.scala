@@ -1,4 +1,7 @@
+import UserItemStrategys._
+
 import scala.collection.immutable.HashMap
+import RichDataStructures.RichHashMap._
 
 /**
  * Holds user preferences.
@@ -13,4 +16,10 @@ case class UserPreference(id: String, ratings: HashMap[String, Double] = new Has
 
   /** Returns a rating to the [[UserPreference]] */
   def getRating(product: String) = ratings get product
+
+  /** Returns whether or not this user has rated different products */
+  def hasDiffRatings(other: UserPreference) = ratings.diff(other.ratings).size > 0
+
+  /** Returns a list of rating comparisons between this and the given user*/
+  def toRatingComparisons(other: UserPreference) = ratings.zipper(other.ratings).values.map(r => RatingComparison(r._1, r._2)) toList
 }
