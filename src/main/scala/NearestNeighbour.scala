@@ -15,9 +15,11 @@ object NearestNeighbour {
    */
   def nearestNeighbours(userPreferences: List[UserPreference], target: UserPreference, strategy: List[RatingComparison] => Double, threshold: Double, amount: Int) = {
     userPreferences
+      .par
       .filter(u => u.id != target.id && u.hasDiffRatings(target))
       .map(u => u.copy(distance = strategy(u.toRatingComparisons(target))))
       .filter(u => u.distance >= threshold)
+      .toList
       .sortWith(_.distance > _.distance)
       .take(amount)
   }

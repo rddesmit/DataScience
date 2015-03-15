@@ -12,11 +12,12 @@ object RatingPrediction {
    */
   def predictRatings(nearestNeighbours: List[UserPreference], target: UserPreference, threshold: Int, amount: Int) = {
     nearestNeighbours
+      .par
       .flatMap(u => u.ratings.map(r => ProductRatingDistance(r._1, r._2, u.distance)))
       .filter(r => !target.ratings.contains(r.id))
       .groupBy(r => r.id)
       .filter(r => r._2.size > threshold)
-      .map(g => PredictedRating(g._1, predictRating(g._2.map(r => RatingDistance(r.rating, r.distance)))))
+      .map(g => PredictedRating(g._1, predictRating(g._2.map(r => RatingDistance(r.rating, r.distance)).toList)))
       .toList
       .sortWith(_.rating > _.rating)
       .take(amount)
