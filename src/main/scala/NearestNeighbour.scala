@@ -1,4 +1,5 @@
-import UserItemStrategys._
+import Strategys.UserItemStrategys._
+import User.UserPreference
 
 /**
  * Created by Rudie on 3-3-2015.
@@ -13,14 +14,14 @@ object NearestNeighbour {
    * @param amount maximal amount of neighbours
    * @return
    */
-  def nearestNeighbours(userPreferences: List[UserPreference], target: UserPreference, strategy: List[RatingComparison] => Double, threshold: Double, amount: Int) = {
+  def nearestNeighbours(userPreferences: List[UserPreference], target: UserPreference, strategy: List[RatingComparison] => Double, threshold: Double, amount: Int) =
     userPreferences
       .par
-      .filter(u => u.id != target.id && u.hasDiffRatings(target))
+      .filter(u => !u.equals(target) && u.hasDiffRatings(target))
       .map(u => u.copy(distance = strategy(u.toRatingComparisons(target))))
-      .filter(u => u.distance >= threshold)
+      .filter(_.distance >= threshold)
       .toList
       .sortWith(_.distance > _.distance)
       .take(amount)
-  }
+
 }

@@ -1,21 +1,20 @@
-import java.nio.charset.CodingErrorAction
-
-import MovieLens.{Movie, Rating}
-import RichDataStructures.RichList._
+import DataStructures.RichList._
+import DataStructures.SlopeOneDeviation
 import NearestNeighbour._
-import RatingPrediction._
-
-import scala.io.{Codec, Source}
+import Predictions.{ItemItemPrediction, UserItemPrediction}
+import Strategys.UserItemStrategys
+import User.UserPreference
 
 /**
  * Created by Rudie on 16-2-2015.
  */
 object Main extends App {
 
-  val user = "7"
+  val user = "186"
   val nearestNeighbourThreshold = 0.35
-  val predictedRatingThreshold = 2
-  val amount = 25
+  val predictedRatingThreshold = 5
+  val nearestNeighboursAmount = 25
+  val predictedRatingsAmount = 8
   val dataUri = getClass getResource "MovieLens/u.data" toURI
   val itemUri = getClass getResource "MovieLens/u.item" toURI
 
@@ -24,31 +23,29 @@ object Main extends App {
   val movies = FileLoader.getMovies(itemUri).toHashMap(_.id)
 
   //map data to HashMap with UserPreferences
+  println("Loading data")
   val preferences = ratings.map(g => (UserPreference(g._1) /: g._2)((r, c) => r addRating(c.product, c.rating))) toList
+  val matrix = SlopeOneDeviation.init(movies.keys.toList, preferences)
+  val target = preferences.find(x => x.id == user) get
 
-  //println("Time: " + Benchmark.time(100, {
-  //calculate nearest neighbours with all user similarity strategy's
-  val euclideanDistance = nearestNeighbours(preferences, preferences.find(x => x.id == user) get, UserItemStrategys.euclideanDistance, nearestNeighbourThreshold, amount)
-  val manhattanDistance = nearestNeighbours(preferences, preferences.find(x => x.id == user) get, UserItemStrategys.manhattanDistance, nearestNeighbourThreshold, amount)
-  val pearsonCoefficient = nearestNeighbours(preferences, preferences.find(x => x.id == user) get, UserItemStrategys.pearsonCoefficient, nearestNeighbourThreshold, amount)
-  val cosineSimilarity = nearestNeighbours(preferences, preferences.find(x => x.id == user) get, UserItemStrategys.cosineSimilarity, nearestNeighbourThreshold, amount)
+  //user-item
+  println("Calculating User-Item")
+  println("User-Item Time: " + Benchmark.time(1, {
+    //find nearest neighbours and predict the ratings
+    val neighbours = nearestNeighbours(preferences, target, UserItemStrategys.pearsonCoefficient, nearestNeighbourThreshold, nearestNeighboursAmount)
+    val ratings = UserItemPrediction.predictRatings(neighbours, target, predictedRatingThreshold, predictedRatingsAmount)
+    ratings.foreach(r => println(r.rating + "\t" + movies(r.id).title))
+  }) / 1000000.0 + " mil. sec.")
 
-  println("Comparing user: \t" + preferences.find(x => x.id == user).get)
-  println("Euclidean distance: \t" + euclideanDistance.map(u => (u.id, u.distance)))
-  println("Manhattan distance: \t" + manhattanDistance.map(u => (u.id, u.distance)))
-  println("Pearson coefficient: \t" + pearsonCoefficient.map(u => (u.id, u.distance)))
-  println("Cosine similarity: \t" + cosineSimilarity.map(u => (u.id, u.distance)))
+  //item-item
+  println("Calculating Item-Item")
+  println("Item-Item Time: " + Benchmark.time(1, {
+    val ratings = ItemItemPrediction.predictRatings(target, movies.keys.toList, matrix, predictedRatingsAmount)
+    ratings.foreach(r => println(r.rating + "\t" + movies(r.id).title))
+  }) / 1000000.0 + " mil. sec.")
 
-  //calculate all predicted top rated products for all strategy's
-  var euclideanDistancePredictions = predictRatings(euclideanDistance, preferences.find(x => x.id == user) get, predictedRatingThreshold, amount)
-  val manhattanDistancePredictions = predictRatings(manhattanDistance, preferences.find(x => x.id == user) get, predictedRatingThreshold, amount)
-  val pearsonCoefficientPredictions = predictRatings(pearsonCoefficient, preferences.find(x => x.id == user) get, predictedRatingThreshold, amount)
-  val cosineSimilarityPredictions = predictRatings(cosineSimilarity, preferences.find(x => x.id == user) get, predictedRatingThreshold, amount)
-
-  println("Predictions for user: \t" + preferences.find(x => x.id == user).get)
-  euclideanDistancePredictions.foreach(p => println("Euclidean distance: \t" + p))
-  manhattanDistancePredictions.foreach(p => println("Manhattan distance: \t" + p))
-  pearsonCoefficientPredictions.foreach(p => println("Pearson coefficient: \t" + p))
-  cosineSimilarityPredictions.foreach(p => println("Cosine similarity: \t" + p))
-  //}))
+  //matrix time
+  println("Matrix Time: " + Benchmark.time(1, {
+    SlopeOneDeviation.init(movies.keys.toList, preferences)
+  }) / 1000000000.0 + " sec.")
 }

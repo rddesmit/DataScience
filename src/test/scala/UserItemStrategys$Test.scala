@@ -1,4 +1,4 @@
-import UserItemStrategys._
+import Strategys.UserItemStrategys._
 import org.scalatest.{FlatSpec, Matchers}
 
 /**

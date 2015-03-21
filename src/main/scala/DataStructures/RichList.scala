@@ -1,4 +1,4 @@
-package RichDataStructures
+package DataStructures
 
 import scala.annotation.tailrec
 import scala.collection.immutable.HashMap
