@@ -12,7 +12,7 @@ object Main extends App {
 
   val user = "186"
   val nearestNeighbourThreshold = 0.35
-  val predictedRatingThreshold = 5
+  val predictedRatingThreshold = 3
   val nearestNeighboursAmount = 25
   val predictedRatingsAmount = 8
   val dataUri = getClass getResource "MovieLens/u.data" toURI
@@ -43,9 +43,4 @@ object Main extends App {
     val ratings = ItemItemPrediction.predictRatings(target, movies.keys.toList, matrix, predictedRatingsAmount)
     ratings.foreach(r => println(r.rating + "\t" + movies(r.id).title))
   }) / 1000000.0 + " mil. sec.")
-
-  //matrix time
-  println("Matrix Time: " + Benchmark.time(1, {
-    SlopeOneDeviation.init(movies.keys.toList, preferences)
-  }) / 1000000000.0 + " sec.")
 }

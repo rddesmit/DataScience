@@ -20,7 +20,7 @@ object UserItemPrediction {
       .flatMap(u => u.ratings.map(r => ProductRatingDistance(r._1, r._2, u.distance)))
       .filter(r => !target.hasRating(r.id))
       .groupBy(r => r.id)
-      .filter(r => r._2.size > threshold)
+      .filter(r => r._2.size >= threshold)
       .map(g => PredictedRating(g._1, predictRating(g._2.map(r => RatingDistance(r.rating, r.distance)) toList)))
       .toList
       .sortWith(_.rating >= _.rating)
