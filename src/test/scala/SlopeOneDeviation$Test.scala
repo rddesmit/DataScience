@@ -17,7 +17,7 @@ class SlopeOneDeviation$Test extends FlatSpec with Matchers {
     val users = List(userOne, userTwo, userThree, userFour)
     val items = List("Taylor Swift", "PSY", "Whitney Houston")
 
-    val matrix = SlopeOneDeviation.init(items, users)
+    val matrix = SlopeOneDeviation(items, users)
 
     matrix.getDeviation("Taylor Swift", "Taylor Swift") should be(Deviation(0, 3))
     matrix.getDeviation("Taylor Swift", "PSY") should be(Deviation(2, 2))

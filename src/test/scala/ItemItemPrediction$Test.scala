@@ -1,4 +1,4 @@
-import DataStructures.SlopeOneDeviation.Matrix
+import DataStructures.SlopeOneDeviation
 import Predictions.ItemItemPrediction._
 import Strategys.ItemItemStrategys.Deviation
 import User.UserPreference
@@ -10,7 +10,7 @@ import org.scalatest.{FlatSpec, Matchers}
 class ItemItemPrediction$Test extends FlatSpec with Matchers {
 
   "Predict rating" should "return 3.375" in {
-    val matrix = Matrix()
+    val matrix = SlopeOneDeviation()
       .addDeviation("Whitney Houston", "Taylor Swift", Deviation(-1, 2))
       .addDeviation("Whitney Houston", "PSY", Deviation(0.75, 2))
       .addDeviation("Whitney Houston", "Whitney Houston", Deviation(0, 2))
@@ -23,7 +23,7 @@ class ItemItemPrediction$Test extends FlatSpec with Matchers {
   }
 
   "Predict rating" should "return 4.6 and 3.4" in {
-    val matrix = Matrix()
+    val matrix = SlopeOneDeviation()
       .addDeviation("a", "a", Deviation(0, 0))
       .addDeviation("a", "b", Deviation(1, 3))
       .addDeviation("a", "c", Deviation(2, 2))

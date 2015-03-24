@@ -7,12 +7,11 @@ import User.UserPreference
 object NearestNeighbour {
   /**
    * Returns the nearest neighbours
-   * @param userPreferences list of preferences to compare the user with
-   * @param target user to compare
-   * @param strategy user similarity strategy to use
-   * @param threshold minimal user similarity
-   * @param amount maximal amount of neighbours
-   * @return
+   * @param userPreferences [[List]] of [[UserPreference]] to compare the target [[UserPreference]] with
+   * @param target [[UserPreference]] to compare
+   * @param strategy user-item similarity strategy to use
+   * @param threshold minimal user-item similarity
+   * @param amount maximal amount of nearest neighbours
    */
   def nearestNeighbours(userPreferences: List[UserPreference], target: UserPreference, strategy: List[RatingComparison] => Double, threshold: Double, amount: Int) =
     userPreferences

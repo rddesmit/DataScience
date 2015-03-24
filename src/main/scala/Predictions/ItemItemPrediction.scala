@@ -1,6 +1,6 @@
 package Predictions
 
-import DataStructures.SlopeOneDeviation.Matrix
+import DataStructures.SlopeOneDeviation
 import User.UserPreference
 
 /**
@@ -8,7 +8,7 @@ import User.UserPreference
  */
 object ItemItemPrediction {
 
-  def predictRatings(target: UserPreference, items: List[String], matrix: Matrix, amount: Int) = {
+  def predictRatings(target: UserPreference, items: List[String], matrix: SlopeOneDeviation, amount: Int) = {
     items
       .par
       .filter(i => !target.hasRating(i))
@@ -19,7 +19,7 @@ object ItemItemPrediction {
       .take(amount)
   }
 
-  def predictRating(target: UserPreference, item: String, matrix: Matrix) = {
+  def predictRating(target: UserPreference, item: String, matrix: SlopeOneDeviation) = {
     val result = (PredictRating(0, 0) /: target.ratings)((r, c) => {
       val deviation = matrix.getDeviation(item, c._1)
       PredictRating(
