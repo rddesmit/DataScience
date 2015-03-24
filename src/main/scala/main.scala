@@ -24,7 +24,7 @@ object Main extends App {
 
   //map data to HashMap with UserPreferences
   println("Loading data")
-  val preferences = ratings.map(g => (UserPreference(g._1) /: g._2)((r, c) => r addRating(c.product, c.rating))) toList
+  val preferences = ratings.par.map(g => UserPreference(g._1, g._2)) toList
   val matrix = SlopeOneDeviation(movies.keys.toList, preferences)
   val target = preferences.find(x => x.id == user) get
 

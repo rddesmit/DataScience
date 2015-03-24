@@ -1,9 +1,15 @@
 package User
 
 import DataStructures.RichHashMap._
+import MovieLens.Rating
 import Strategys.UserItemStrategys._
 
 import scala.collection.immutable.HashMap
+
+object UserPreference {
+  def apply(id: String, ratings: List[Rating]): UserPreference =
+    (UserPreference(id) /: ratings)((r, c) => r addRating(c.product, c.rating))
+}
 
 /**
  * Stores the ratings of a user.
