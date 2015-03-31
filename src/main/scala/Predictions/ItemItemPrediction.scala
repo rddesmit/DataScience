@@ -13,7 +13,6 @@ object ItemItemPrediction {
       .par
       .filter(i => !target.hasRating(i))
       .map(i => PredictedRating(i, predictRating(target, i, matrix)))
-      .filter(r => !r.rating.isNaN)
       .toList
       .sortWith(_.rating >= _.rating)
       .take(amount)
@@ -21,11 +20,13 @@ object ItemItemPrediction {
 
   def predictRating(target: UserPreference, item: String, matrix: SlopeOneDeviation) = {
     val result = (PredictRating(0, 0) /: target.ratings)((r, c) => {
-      val deviation = matrix.getDeviation(item, c._1)
-      PredictRating(
-        r.numerator + (c._2 + deviation.deviation) * deviation.amount,
-        r.denominator + deviation.amount
-      )
+      if (matrix hasDeviation(item, c._1)) {
+        val deviation = matrix getDeviation(item, c._1)
+        PredictRating(
+          r.numerator + (c._2 + deviation.deviation) * deviation.amount,
+          r.denominator + deviation.amount
+        )
+      } else r
     })
 
     result.numerator / result.denominator

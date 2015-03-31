@@ -1,8 +1,6 @@
 import DataStructures.RichList._
 import DataStructures.SlopeOneDeviation
-import NearestNeighbour._
-import Predictions.{ItemItemPrediction, UserItemPrediction}
-import Strategys.UserItemStrategys
+import Predictions.ItemItemPrediction
 import User.UserPreference
 
 /**
@@ -29,13 +27,13 @@ object Main extends App {
   val target = preferences.find(x => x.id == user) get
 
   //user-item
-  println("Calculating User-Item")
-  println("User-Item Time: " + Benchmark.time(1, {
-    //find nearest neighbours and predict the ratings
-    val neighbours = nearestNeighbours(preferences, target, UserItemStrategys.pearsonCoefficient, nearestNeighbourThreshold, nearestNeighboursAmount)
-    val ratings = UserItemPrediction.predictRatings(neighbours, target, predictedRatingThreshold, predictedRatingsAmount)
-    ratings.foreach(r => println(r.rating + "\t" + movies(r.id)))
-  }) / 1000000.0 + " mil. sec.")
+  //  println("Calculating User-Item")
+  //  println("User-Item Time: " + Benchmark.time(1, {
+  //    //find nearest neighbours and predict the ratings
+  //    val neighbours = nearestNeighbours(preferences, target, UserItemStrategys.pearsonCoefficient, nearestNeighbourThreshold, nearestNeighboursAmount)
+  //    val ratings = UserItemPrediction.predictRatings(neighbours, target, predictedRatingThreshold, predictedRatingsAmount)
+  //    ratings.foreach(r => println(r.rating + "\t" + movies(r.id)))
+  //  }) / 1000000.0 + " mil. sec.")
 
   //item-item
   println("Calculating Item-Item")
