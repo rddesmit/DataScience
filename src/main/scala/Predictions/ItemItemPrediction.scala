@@ -11,7 +11,7 @@ object ItemItemPrediction {
   def predictRatings(target: UserPreference, items: List[String], matrix: SlopeOneDeviation, amount: Int) = {
     items
       .par
-      .filter(i => !target.hasRating(i))
+      .filterNot(i => target.hasRating(i))
       .map(i => PredictedRating(i, predictRating(target, i, matrix)))
       .toList
       .sortWith(_.rating >= _.rating)

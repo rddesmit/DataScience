@@ -14,7 +14,7 @@ object SlopeOneDeviation {
     val data = items
       .par
       .flatMap(i => items.map(j => (i, j, slopeOne(i, j, users))))
-      .filter(r => r._3.amount > 0)
+      .filterNot(r => r._3.amount == 0 || r._3.amount.isNaN)
 
     (SlopeOneDeviation() /: data)((r, c) => r.addDeviation(c._1, c._2, c._3))
   }
