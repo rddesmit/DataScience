@@ -12,20 +12,14 @@ object FileLoader {
   implicit val codec = Codec("UTF-8")
   codec.onMalformedInput(CodingErrorAction.IGNORE)
 
-  def getMovies(uri : URI) = {
-    val data = Source fromFile uri getLines() toList
-
-    data.par.map(_.split("\\|") match {
+  def getMovies(uri: URI) =
+    Source.fromFile(uri).getLines().toList.par.map(_.split("\\|") match {
       case Array(id: String, title: String, releaseDate: String, videoReleaseData: String, imdbUrl: String, _*) => Movie(id, title, releaseDate, videoReleaseData, imdbUrl)
     }) toList
-  }
 
-  def getRatings(uri: URI) = {
-    val data = Source fromFile uri getLines() toList
-
-    data.par.map(_.replace(",", "\t").split("\t") match {
+  def getRatings(uri: URI) =
+    Source.fromFile(uri).getLines().toList.par.map(_.replace(",", "\t").split("\t") match {
       case Array(id: String, product: String, rating: String) => Rating(id, product, rating toDouble)
       case Array(id: String, product: String, rating: String, _) => Rating(id, product, rating toDouble)
     }) toList
-  }
 }

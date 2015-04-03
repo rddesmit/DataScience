@@ -9,9 +9,14 @@ import User.UserPreference
 object ItemItemStrategys {
   def slopeOne(i: String, j: String, userPreferences: List[UserPreference]) = {
     val data = userPreferences.filter(u => u.hasRating(i) && u.hasRating(j))
-    val currdev = (0.0 /: data)((r, c) => r + (c.getRating(i).get - c.getRating(j).get))
+    val result = (SlopeOne(0, 0) /: data)((r, c) => {
+      SlopeOne(
+        r.currdev + (c.getRating(i).get - c.getRating(j).get),
+        r.size + 1
+      )
+    })
 
-    Deviation(currdev / data.size, data size)
+    Deviation(result.currdev / result.size, result size)
   }
 
   def acs(i: String, j: String, userPreferences: List[UserPreference]) = {
@@ -32,6 +37,6 @@ object ItemItemStrategys {
     def unary_- = copy(deviation = -deviation)
   }
 
+  private case class SlopeOne(currdev: Double, size: Int)
   private case class ACS(mult: Double, powI: Double, powJ: Double)
-
 }
