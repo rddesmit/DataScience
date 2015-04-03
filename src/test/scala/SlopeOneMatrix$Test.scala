@@ -26,6 +26,24 @@ class SlopeOneMatrix$Test extends FlatSpec with Matchers {
     matrix.getDeviation("Whitney Houston", "Taylor Swift") should be(Deviation(-1, 2))
   }
 
+  "Slope one deviation" should "updateDeviation matrix" in {
+    val userOne = UserPreference("Amy").addRating("Taylor Swift", 4).addRating("PSY", 3).addRating("Whitney Houston", 4)
+    val userTwo = UserPreference("Ben").addRating("Taylor Swift", 5).addRating("PSY", 2)
+    val userThree = UserPreference("Clara").addRating("PSY", 3.5).addRating("Whitney Houston", 4)
+    val userFour = UserPreference("Daisy").addRating("Taylor Swift", 5).addRating("Whitney Houston", 3)
+
+    val users = List(userOne, userTwo, userThree, userFour)
+    val items = List("Taylor Swift", "PSY", "Whitney Houston")
+
+    val updatedUser = userTwo.addRating("Whitney Houston", 2)
+    val updatedUsers = List(userOne, updatedUser, userThree, userFour)
+
+    val updatedMatrix = SlopeOneMatrix(items, users).updateDeviation(updatedUser, "Whitney Houston")
+    val newMatrix = SlopeOneMatrix(items, updatedUsers)
+
+    updatedMatrix should be(newMatrix)
+  }
+
   "SlopeOneMatrix" should "be filled" in {
     val userOne = UserPreference("Amy").addRating("Taylor Swift", 4).addRating("PSY", 3).addRating("Whitney Houston", 4)
     val userTwo = UserPreference("Ben").addRating("Taylor Swift", 5).addRating("PSY", 2)

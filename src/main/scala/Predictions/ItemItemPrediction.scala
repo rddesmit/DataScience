@@ -8,6 +8,7 @@ import User.UserPreference
  */
 object ItemItemPrediction {
 
+  /** Returns the top N [[PredictedRating]] for the target [[UserPreference]] */
   def predictRatings(target: UserPreference, items: List[String], matrix: SlopeOneMatrix, amount: Int) = {
     items
       .par
@@ -18,6 +19,7 @@ object ItemItemPrediction {
       .take(amount)
   }
 
+  /** Returns the predict rating for the given item and [[UserPreference]] based on the [[SlopeOneMatrix]] */
   def predictRating(target: UserPreference, item: String, matrix: SlopeOneMatrix) = {
     val result = (PredictRating(0, 0) /: target.ratings)((r, c) => {
       if (matrix hasDeviation(item, c._1)) {

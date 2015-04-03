@@ -7,8 +7,10 @@ import User.UserPreference
  * Created by Rudie on 17-3-2015.
  */
 object ItemItemStrategys {
-  def slopeOne(i: String, j: String, userPreferences: List[UserPreference]) = {
-    val data = userPreferences.filter(u => u.hasRating(i) && u.hasRating(j))
+
+  /** Returns the [[Deviation]] between items i and j */
+  def slopeOne(i: String, j: String, users: List[UserPreference]) = {
+    val data = users.filter(u => u.hasRating(i) && u.hasRating(j))
     val result = (SlopeOne(0, 0) /: data)((r, c) => {
       SlopeOne(
         r.currdev + (c.getRating(i).get - c.getRating(j).get),
@@ -17,6 +19,12 @@ object ItemItemStrategys {
     })
 
     Deviation(result.currdev / result.size, result size)
+  }
+
+  /** Returns the updated [[Deviation]] between items i and j based on the given previous [[Deviation]] and [[UserPreference]] */
+  def slopeOneUpdate(deviation: Deviation, i: String, j: String, user: UserPreference) = {
+    val amount = deviation.amount + 1
+    Deviation(((deviation.deviation * deviation.amount) + (user.getRating(i).get - user.getRating(j).get)) / amount, amount)
   }
 
   def acs(i: String, j: String, userPreferences: List[UserPreference]) = {

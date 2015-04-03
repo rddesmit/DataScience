@@ -15,6 +15,11 @@ class ItemItemStrategys$Test extends FlatSpec with Matchers {
     slopeOne("Taylor Swift", "PSY", List(userOne, userTwo, userThree, userFour)) should be(Deviation(2, 2))
   }
 
+  "Slope one updateDeviation" should "return x" in {
+    val user = UserPreference("Amy").addRating("a", 5).addRating("b", 1)
+    slopeOneUpdate(Deviation(2, 9), "a", "b", user) should be(Deviation(2.2, 10))
+  }
+
   "acs" should "return -0.9701425001453319" in {
     val userOne = UserPreference("Amy").addRating("a", 3.5).addRating("b", 3.0).addRating("c", 4.0)
     val userTwo = UserPreference("Bill").addRating("a", 2.0).addRating("b", 5.0).addRating("c", 2.0)
