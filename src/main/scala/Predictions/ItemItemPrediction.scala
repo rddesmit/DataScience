@@ -9,7 +9,7 @@ import User.UserPreference
 object ItemItemPrediction {
 
   /** Returns the top N [[PredictedRating]] for the target [[UserPreference]] */
-  def predictRatings(target: UserPreference, items: List[String], matrix: SlopeOneMatrix, amount: Int) = {
+  def predictTopRatings(target: UserPreference, items: List[String], matrix: SlopeOneMatrix, amount: Int) = {
     items
       .par
       .filterNot(i => target.hasRating(i))

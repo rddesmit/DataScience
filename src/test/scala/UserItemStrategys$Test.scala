@@ -18,6 +18,9 @@ class UserItemStrategys$Test extends FlatSpec with Matchers {
   "Pearson Coefficient" should "return 0.9999999999999998" in {
     val data = List(RatingComparison(4.75, 4.0), RatingComparison(4.5, 3.0), RatingComparison(5.0, 5.0), RatingComparison(4.25, 2.0), RatingComparison(4.0, 1.0))
     pearsonCoefficient(data) should be (0.9999999999999998)
+
+    val data2 = List(RatingComparison(1, 4), RatingComparison(2, 3), RatingComparison(3, 2), RatingComparison(1, 2), RatingComparison(2, 3), RatingComparison(3, 1), RatingComparison(5, 1))
+    pearsonCoefficient(data2) should be(-0.7350766701980261)
   }
 
   "Cosine Similarity" should "return 0.9351534585705217" in {

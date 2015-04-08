@@ -33,14 +33,14 @@ object Main extends App {
   println("User-Item Time: " + Benchmark.time(1, {
     //find nearest neighbours and predict the ratings
     val neighbours = nearestNeighbours(preferences, target, UserItemStrategys.pearsonCoefficient, nearestNeighbourThreshold, nearestNeighboursAmount)
-    val ratings = UserItemPrediction.predictRatings(neighbours, target, predictedRatingThreshold, predictedRatingsAmount)
+    val ratings = UserItemPrediction.predictTopRatings(neighbours, target, predictedRatingThreshold, predictedRatingsAmount)
     ratings.foreach(r => println(r.rating + "\t" + movies(r.id)))
   }) / 1000000.0 + " mil. sec.")
 
   //item-item
   println("Calculating Item-Item")
   println("Item-Item Time: " + Benchmark.time(1, {
-    val ratings = ItemItemPrediction.predictRatings(target, movies.keys.toList, matrix, predictedRatingsAmount)
+    val ratings = ItemItemPrediction.predictTopRatings(target, movies.keys.toList, matrix, predictedRatingsAmount)
     ratings.foreach(r => println(r.rating + "\t" + movies(r.id)))
   }) / 1000000.0 + " mil. sec.")
 }
